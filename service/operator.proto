@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package services;
+
+option go_package = "oper/service";
+
+import "entity/operation.proto";
+
+service Operator {
+    rpc RegisterOperation(RegisterOperationReq) returns (RegisterOperationRes) {}
+    rpc UpdateOperation(UpdateOperationReq) returns (UpdateOperationRes) {}
+    rpc OperationCanceled(OperationCanceledReq) returns (OperationCanceledRes) {}
+    rpc OperationProcessing(OperationProcessingReq) returns (OperationProcessingRes) {}
+}
+
+message RegisterOperationReq {
+    int64 operation_id = 1;
+    int64 client_id = 2;
+    bytes data = 3;
+}
+
+message RegisterOperationRes {
+    bytes registered_operation_id = 1;
+    bytes operation_processing_id = 2;
+}
+
+message UpdateOperationReq {
+    bytes registered_operation_id = 1;
+    int32 state = 2;
+}
+
+message UpdateOperationRes {}
+
+message OperationCanceledReq {
+    bytes registered_operation_id = 1;
+}
+
+message OperationCanceledRes {
+    bool canceled = 1;
+}
+
+message OperationProcessingReq {
+    bytes operation_processing_id = 1;
+}
+
+message OperationProcessingRes {
+    entity.OperationProcessing operation_processing = 1;
+}

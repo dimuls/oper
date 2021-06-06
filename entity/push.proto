@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package entity;
+
+option go_package = "oper/entity";
+
+message PushMessage {
+    int64 device_id = 1;
+    string message = 2;
+}

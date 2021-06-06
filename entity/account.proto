@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package entity;
+
+option go_package = "oper/entity";
+
+enum Currency {
+    RUB = 0;
+    POINTS = 1;
+}
+
+message Exchange {
+    int64 account_id = 1;
+    Currency from = 2;
+    Currency to = 3;
+    int64 amount = 4;
+}
+
+message Withdraw {
+    int64 account_id = 2;
+    int64 amount = 1;
+}
+
+message Deposit {
+    int64 account_id = 2;
+    int64 amount = 1;
+}
+
+message AccountOperation {
+    oneof operation {
+        Withdraw withdraw = 1;
+        Deposit deposit = 2;
+    }
+}

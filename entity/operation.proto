@@ -1,0 +1,99 @@
+syntax = "proto3";
+
+package entity;
+
+option go_package = "oper/entity";
+
+import "google/protobuf/timestamp.proto";
+
+// Перечисление типов ограничений.
+enum OperationRestrictionType {
+    UNKNOWN = 0;
+    BY_CHANNEL = 1;
+    BY_ACCESS_RIGHTS = 2;
+}
+
+// Ограничение операции.
+message OperationRestriction {
+    int64 id = 1;
+    OperationRestrictionType type = 2;
+    // Данные, определяющие ограничение, формат зависит от типа ограничения.
+    bytes data = 3;
+}
+
+// Группа операций.
+message OperationGroup {
+    int64 id = 1;
+    int64 group_id = 2; // ID группы-надкатегории
+    string name = 3;
+}
+
+// Операция.
+message Operation {
+    int64 id = 1;
+    int64 group_id = 2;
+    bytes logo_id = 3; // UUID файла логотипа
+    repeated string tags = 4;
+    repeated OperationRestriction restrictions = 5;
+}
+
+// Состояние операции, набор доступных состояний зависят от операции.
+message RegisteredOperationState {
+    int32 id = 1;
+    string title = 2;
+}
+
+// Зарегистрированная клиентом операция, которая должна обработаться.
+message RegisteredOperation {
+    bytes id = 1; // UUID зарегистрированной клиентом операции
+    int64 operation_id = 2;
+    int64 client_id = 3;
+    bytes processing_id = 4; // UUID обработки операции (OperationProcessing)
+    // ID текущего состояния выполняемой операции, у каждой операции свой
+    // набор состояний
+    int32 state = 6;
+    google.protobuf.Timestamp created_at = 7;
+}
+
+// Шаг обработки операции, формируется регистратором, зависят от операции
+// клиента.
+message OperationProcessingStep {
+    // UUID
+    bytes id = 1;
+    // Кому предназначен шаг операции.
+    string to_service = 2;
+    // Данные, которые формируются operator, необходимые для выполнения
+    // шага обработки операции.
+    bytes data = 3;
+    // Шаг отмены, начиная с которой необходимо выполнять операции отмены
+    int32 start_cancel_from_step = 4;
+    // Произошла ли ошибка на этом шаге.
+    bool error = 5;
+    // Текст ошибки.
+    string error_message = 6;
+    // Время выполнения шага обрабатываемой операции.
+    google.protobuf.Timestamp started_at =7;
+    // Время выполнения шага обрабатываемой операции.
+    google.protobuf.Timestamp done_at = 8;
+}
+
+// Обрабатываемая операция.
+message OperationProcessing {
+    bytes id = 1; // UUID
+    bytes registered_operation_id = 2;
+    int32 state = 3; // текущее состояния выполняемой операции
+    bool canceled = 4; // отменена ли операция
+    bool error = 5; // произошла ошибка в одном или более шагов
+    bytes data = 6; // данные от пользователя, зависят от операции
+    // Шаги операций, формируются сразу регистратором в зависимости от операции.
+    repeated OperationProcessingStep steps = 7;
+    // Номер текущего шага, который необходимо выполнить. Обработчики
+    // меняют увеличивают его на один.
+    int32 current_step = 8;
+    // Шаги операций для отмены обработки операции, формируются сразу
+    // регистратором в зависимости от операции. Добавляются в steps при
+    // отмене обработки операции.
+    repeated OperationProcessingStep cancel_steps = 9;
+    // Время создания обрабатываемой операции.
+    google.protobuf.Timestamp created_at = 10;
+}

@@ -1,0 +1,69 @@
+syntax = "proto3";
+
+package services;
+
+option go_package = "oper/service";
+
+import "entity/operation.proto";
+import "google/api/annotations.proto";
+import "entity/account.proto";
+
+service Weber {
+    rpc PostExchange (PostExchangeReq) returns (PostExchangeRes) {
+        option (google.api.http) = {
+            post: "/api/v1/exchange"
+            body: "*"
+        };
+    }
+
+    rpc GetPointsAmount (GetPointsAmountReq) returns (GetPointsAmountRes) {
+        option (google.api.http) = {
+            get: "/api/v1/points/amount"
+        };
+    }
+
+    rpc GetAccountAmount (GetAccountAmountReq) returns (GetAccountAmountRes) {
+        option (google.api.http) = {
+            get: "/api/v1/account/amount"
+        };
+    }
+
+    rpc GetOperationProcessing (GetOperationProcessingReq) returns (GetOperationProcessingRes) {
+        option (google.api.http) = {
+            get: "/api/v1/operation_processing"
+        };
+    }
+}
+
+message PostExchangeReq {
+    entity.Exchange exchange = 1;
+}
+
+message PostExchangeRes {
+    string registered_operation_id = 1;
+    string operation_processing_id = 2;
+}
+
+message GetPointsAmountReq {
+    int64 account_id = 1;
+}
+
+message GetPointsAmountRes {
+    int64 amount = 1;
+}
+
+message GetAccountAmountReq {
+    int64 account_id = 1;
+}
+
+message GetAccountAmountRes {
+    int64 amount = 1;
+}
+
+message GetOperationProcessingReq {
+    string operation_processing_id = 1;
+}
+
+message GetOperationProcessingRes {
+    entity.OperationProcessing operation_processing = 1;
+}

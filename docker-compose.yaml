@@ -1,0 +1,72 @@
+version: "3.9"
+
+services:
+
+  registry:
+    image: 'registry:latest'
+    ports:
+      - 5000:5000
+    deploy:
+      endpoint_mode: vip
+      replicas: 1
+
+  zookeeper:
+    image: 'bitnami/zookeeper:latest'
+    ports:
+      - '2181:2181'
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    deploy:
+      endpoint_mode: vip
+      replicas: 1
+
+  kafka:
+    image: 'bitnami/kafka:latest'
+    environment:
+      - KAFKA_BROKER_ID=1
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://tasks.kafka:9092
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    deploy:
+      endpoint_mode: vip
+      replicas: 1
+
+  nginx:
+    image: 127.0.0.1:5000/nginx
+    ports:
+      - "8080:80"
+    deploy:
+      endpoint_mode: vip
+      replicas: 1
+
+  operator:
+    image: 127.0.0.1:5000/operator
+    deploy:
+      endpoint_mode: dnsrr
+      replicas: 1
+
+  weber:
+    image: 127.0.0.1:5000/weber
+    deploy:
+      endpoint_mode: dnsrr
+      replicas: 1
+
+  accounter:
+    image: 127.0.0.1:5000/accounter
+    deploy:
+      endpoint_mode: dnsrr
+      replicas: 1
+
+  pointer:
+    image: 127.0.0.1:5000/pointer
+    deploy:
+      endpoint_mode: dnsrr
+      replicas: 1
+
+  pusher:
+    image: 127.0.0.1:5000/pusher
+    deploy:
+      endpoint_mode: dnsrr
+      replicas: 1

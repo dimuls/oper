@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package services;
+
+option go_package = "oper/service";
+
+service Pointer {
+    rpc AccountAmount(PointsAmountReq) returns (PointsAmountRes) {}
+}
+
+message PointsAmountReq {
+    int64 account_id = 1;
+}
+
+message PointsAmountRes {
+    int64 amount = 2;
+}
